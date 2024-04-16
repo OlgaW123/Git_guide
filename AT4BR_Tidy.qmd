@@ -1,0 +1,67 @@
+---
+title: "AT4BR_Tidy"
+format: html
+editor: visual
+---
+
+## Assignment
+
+Use **tidyr** and **dplyr** libraries whenever possible, to do the following:
+
+1- Load the "iris" dataset.
+
+Dataset is included in base R.
+
+2- Transform it to longer (tip: you should get 3 columns Species \| Trait \| Size )
+
+```{r}
+library(tidyr)
+library(dplyr)
+
+# Transform iris to longer format
+iris_long <- iris %>%
+  pivot_longer(
+    cols = -Species,
+    names_to = "Trait",
+    values_to = "Size"
+  )
+iris_long
+```
+
+3- Answer the following questions. (tip: you can answer each question "piping" only 2-3 commands )
+
+A\) What is the **mean** length and width of the sepal and petal of each species?
+
+```{r}
+iris_long %>%
+  group_by(Species, Trait) %>%
+  summarize(
+    Mean_Size = mean(Size),
+    .groups = 'drop'
+  )
+```
+
+B\) What is the **largest** and **widest**,  **petal** and **sepal**,  of **virginica** and **versicolor** species?
+
+```{r}
+iris_long %>%
+  filter(Species %in% c("virginica", "versicolor")) %>%
+  group_by(Species, Trait) %>%
+  summarize(
+    Max_Size = max(Size),
+    .groups = 'drop'
+  )
+```
+
+C\) For each species, for **sepal** and **petal, width** and **length**,  how many observations are above the mean?\*    
+
+```{r}
+iris_long %>%
+  group_by(Species, Trait) %>%
+  mutate(
+    Mean_Size = mean(Size)
+  ) %>%
+  ungroup() %>%
+  filter(Size > Mean_Size) %>%
+  count(Species, Trait)
+```
